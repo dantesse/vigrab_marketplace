@@ -46,7 +46,12 @@ const MyAuctions = ({
     download(csvConfig)(csv);
   };
   const { mutate: server_deleteAuction } = useMutation({
-    mutationFn: deleteAuction,
+    // TanStack Query v5.90+ calls mutationFn(variables, context), and that
+    // context carries a QueryClient instance. Passing a Server Action here
+    // directly sends it as a second argument, which the RSC encoder rejects
+    // with "Only plain objects ... can be passed to Server Actions".
+    // Wrapping it means only `variables` crosses the boundary.
+    mutationFn: (id: string) => deleteAuction(id),
     onSuccess: () => {
       toast.success('Auction deleted successfully');
     },
