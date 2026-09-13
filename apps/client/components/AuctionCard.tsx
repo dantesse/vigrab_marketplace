@@ -17,7 +17,7 @@ type AuctionT = {
   updatedAt: Date;
   userId: string;
   image: string;
-  categories: string;
+  category?: { name: string } | null;
 };
 
 const formatTime = (milliseconds: any) => {

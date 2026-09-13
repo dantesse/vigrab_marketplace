@@ -1,6 +1,5 @@
-import { PrismaClient, AuctionStatus } from "@prisma/client";
+import { db, AuctionStatus } from "@repo/db";
 
-const client = new PrismaClient();
-
+const client = db;
 export const db = client;
 export const AuctionStatusHelper = AuctionStatus;

@@ -20,6 +20,17 @@ const page = async ({ params }: { params: { id: string } }) => {
         },
       },
       user: true,
+      category: {
+        include: {
+          parent: {
+            include: {
+              parent: {
+                include: { parent: true },
+              },
+            },
+          },
+        },
+      },
     },
   });
 

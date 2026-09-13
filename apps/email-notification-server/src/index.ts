@@ -14,10 +14,12 @@ type EmailData = {
 };
 const emailFrom = process.env.EMAIL_FROM;
 const client = createClient({
+  username: "default",
   password: process.env.REDIS_PASSWORD,
   socket: {
     host: process.env.REDIS_HOST,
-    port: 17801,
+    port: Number(process.env.REDIS_PORT || 6379),
+    tls: true,	
   },
 });
 

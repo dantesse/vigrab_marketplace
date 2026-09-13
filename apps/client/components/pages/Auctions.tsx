@@ -13,12 +13,14 @@ type AuctionT = {
   updatedAt: Date;
   userId: string;
   image: string;
-  categories: string;
+  images?: string[];
+  category?: { name: string } | null;
+  extraFields?: any;
 };
 
 const Auctions = ({ auctions }: { auctions: AuctionT[] }) => {
   return (
-    <section className='grid grid-cols-1 gap-4 p-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 '>
+    <section className='grid grid-cols-1 gap-4 p-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
       {auctions.map((auction) => (
         <AuctionCardComponent key={auction.id} auction={auction} />
       ))}

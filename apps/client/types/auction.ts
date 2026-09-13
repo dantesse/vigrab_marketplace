@@ -16,19 +16,31 @@ export const Auctionschema = z
     description: z.string().min(1, { message: 'Description is required' }),
     startingPrice: z.number().min(1, { message: 'Starting price is required' }),
     startDate: z.date().refine((date) => date > new Date(), {
-      message: 'Start value  must be in the future',
+      message: 'Start date must be in the future',
     }),
     endDate: z.date().refine((date) => date > new Date(), {
-      message: 'End value must be in the future',
+      message: 'End date must be in the future',
     }),
-    Categories: z.string().nonempty({ message: 'Category cannot be Empty' }),
+    categoryId: z.string().min(1, { message: 'Category is required' }),
+    extraFields: z.record(z.string(), z.any()).optional(),
+    images: z.array(z.string().url()).optional(),
   })
   .refine((data) => data.endDate > data.startDate, {
-    message: 'End value must be after start value',
+    message: 'End date must be after start date',
     path: ['endDate'],
   });
 
 export type AuctionT = z.infer<typeof Auctionschema>;
+
+export type FieldSchema = {
+  fields: {
+    name: string;
+    label: string;
+    type: 'text' | 'number' | 'select';
+    options?: string[];
+    required: boolean;
+  }[];
+};
 
 export type bidT = {
   id: string;
@@ -46,12 +58,13 @@ export type auctionType = {
   currentPrice: number;
   startDate: Date;
   endDate: Date;
-  status: 'INACTIVE' | 'ACTIVE ' | 'ENDED';
+  status: 'INACTIVE' | 'ACTIVE' | 'ENDED';
   createdAt: Date;
   updatedAt: Date;
   userId: string;
   image: string;
-  categories: 'COLLECTABLES' | 'WATCHES' | 'FASHION';
+  categoryId: string | null;
+  extraFields: Record<string, any> | null;
   bids: bidT[];
   user: {
     id: string;

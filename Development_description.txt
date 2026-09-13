@@ -1,0 +1,113 @@
+DEVELOPMENT.md — DESCRIPTION
+================================
+
+Purpose
+-------
+DEVELOPMENT.md is the internal developer guide for the Vigrab Marketplace
+codebase. It documents the conventions, data model, and patterns introduced
+while turning the original BidRealm starter into Vigrab — a Swedish-language
+auction marketplace for timber, wood products, and forest / wood-processing
+machinery.
+
+It is intended to be read by:
+  - A new contributor onboarding to the project.
+  - Any developer who needs to add a category, attribute, or page and wants
+    to know "where does this go and what conventions apply?".
+
+It deliberately does NOT replace the upstream README.md (which is the BidRealm
+starter's project README). The two are kept side-by-side.
+
+Location
+--------
+Repository root: /DEVELOPMENT.md
+
+
+Section-by-section summary
+--------------------------
+
+1. Stack & repo layout
+   Describes the Turborepo structure (apps/client, apps/server, packages/db,
+   etc.) and the main libraries: Next.js App Router, Prisma + PostgreSQL,
+   Lucia, TanStack Query, Tailwind + shadcn/ui, Zod, react-hook-form,
+   lucide-react, UploadThing.
+
+2. Data model
+   2.1  Category — the self-referencing tree (parentId → parent/children),
+        the `icon` logical-key convention, the unique-slug rule, and the
+        `fieldSchema` JSON field that drives dynamic attributes.
+   2.2  Auction — the added `categoryId` relation and `extraFields` JSON
+        column. Includes the Prisma gotcha: use `Prisma.JsonNull`, never
+        the JS literal `null`, for nullable JSON columns.
+
+3. Category taxonomy (current state)
+   The full Swedish three-tier tree as it currently exists in the seed:
+     1. Timmer & Stockar  (species sub-tree)
+     2. Träprodukter      (Byggmaterial / Snickeri / Möbler — with a 4-level
+        species branch under Obehandlad virke)
+     3. Skogs- & Träbearbetningsmaskiner  (Skogsarbete / Sågverk /
+        Snickerimaskiner)
+   Notes that all names are Swedish (no i18n layer yet).
+
+4. Dynamic field schema (fieldSchema)
+   Documents the JSON shape ({ fields: [{name, label, type, required, …}] }),
+   supported field types (text / number / select), and — importantly — that
+   `fieldSchema` can be attached at ANY level of the tree. The form picks up
+   the deepest non-empty schema along the selected path. Includes naming
+   conventions: snake_case `name`, Swedish `label`, units in the label.
+
+5. Mega menu — discovery
+   Explains the data flow (layout.tsx fetches `getCategoryTree()` once per
+   request → Navbar → CategoryMegaMenu) and how the panel auto-adapts to
+   2-, 3-, or 4-level branches. Lists the two files to update when adding
+   a new top category with a new icon.
+
+6. Listing creation — cascading picker
+   Walks through the CreateAuction.tsx + CategoryCascadePicker.tsx flow:
+   N dependent dropdowns, the `CascadeSelection` shape emitted to the form,
+   how dynamic fields render, and the three client-side submit guards
+   (must pick a category; must drill to a leaf; required dynamic fields).
+
+7. Server actions
+   Lists the actions in apps/client/actions/ that touch categories or
+   listings: getTopCategories, getCategoryBySlug, getLeafCategories,
+   getCategoryTree (canonical), and createAuction.
+
+8. Local development
+   The setup commands: yarn install, copy .env, prisma migrate dev,
+   prisma generate. The seed command
+   (`npx ts-node packages/db/prisma/seed.ts`, with dotenv loaded inside
+   the seed file itself). The type-check command
+   (`npx tsc --noEmit -p apps/client/tsconfig.json`) — must be clean
+   before merging. The dev-server command (`yarn run dev`).
+
+9. How to add a new category
+   Six-step checklist: edit seed → unique slug → decide schema attachment
+   level → re-run seed → refresh. Plus the "only if you added a new top
+   icon" follow-up step for the two icon-map files.
+
+10. How to add a new dynamic field type
+    Three touch-points: extend the FieldSchema type, add a render branch
+    in CreateAuction, decide value coercion. All values must remain
+    JSON-serialisable.
+
+11. Conventions cheat-sheet
+    A quick-reference table covering: display language (Swedish),
+    slug style (kebab-case ASCII), extraFields keys (snake_case, stable),
+    units in labels, icon logical keys, client-side required validation,
+    Prisma.JsonNull rule, and the zero-error type-check gate.
+
+12. Roadmap
+    Likely next steps: /auctions browse page with sub-tree sidebar;
+    listing card / detail enhancements that surface extraFields;
+    multi-image upload; saved searches / category alerts;
+    seller onboarding split from buyer sign-up.
+
+
+How to use this document
+------------------------
+- Reading order for onboarding:    1 → 2 → 3 → 4 → 5 → 6 → 8.
+- Reading order for adding a
+  new category leaf:                3 → 4 → 9.
+- Reading order for adding a
+  new attribute type:               4 → 10 → 11.
+- Reading order before merging:     8 (type-check) → 11 (conventions).

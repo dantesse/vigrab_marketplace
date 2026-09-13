@@ -1,3 +1,4 @@
+import { getCategoryTree } from "@/actions/GetCategories";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { getAuth } from "@/lib/auth";
@@ -21,6 +22,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { session } = await getAuth();
+  const categoryTree = await getCategoryTree();
 
   return (
     <ReactQueryClientProvider>
@@ -35,6 +37,7 @@ export default async function RootLayout({
             <div className="flex flex-col min-h-screen dark:bg-background dark:text-foreground">
               <Navbar
                 session={session}
+                categoryTree={categoryTree}
                 className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
               />
               <Toaster position="top-center" />

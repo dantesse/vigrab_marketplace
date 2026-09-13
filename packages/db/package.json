@@ -1,8 +1,10 @@
 {
   "name": "@repo/db",
   "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "prisma generate",
+    "build": "prisma generate && tsup src/index.ts src/types.ts --format cjs",
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed"
   },
@@ -14,16 +16,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "5.19.1",
+    "@prisma/client": "5.22.0",
     "dotenv": "^16.4.5"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types.ts"
+    ".": "./dist/index.js",
+    "./types": "./dist/types.js"
   },
   "devDependencies": {
     "@types/node": "^22.5.0",
-    "prisma": "^5.18.0",
+    "prisma": "5.22.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.1.0"
   }
