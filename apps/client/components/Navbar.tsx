@@ -42,7 +42,12 @@ const Navbar = ({
 
   const router = useRouter();
   const { mutate: server_Signout } = useMutation({
-    mutationFn: Signout,
+    // TanStack Query v5.90+ calls mutationFn(variables, context), and that
+    // context carries a QueryClient instance. Passing a Server Action here
+    // directly sends it as a second argument, which the RSC encoder rejects
+    // with "Only plain objects ... can be passed to Server Actions".
+    // Wrapping it means only `variables` crosses the boundary.
+    mutationFn: () => Signout(),
     onSuccess: () => {
       router.push('/');
     },
